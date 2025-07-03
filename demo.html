@@ -1,0 +1,569 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AlgaeFarm Pro - Smart Aquaculture Management</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #f8fafc 0%, #e0f2fe 50%, #ecfdf5 100%);
+            min-height: 100vh;
+        }
+        
+        .glass-effect {
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .sidebar-gradient {
+            background: linear-gradient(180deg, #1e293b 0%, #0f172a 50%, #1e293b 100%);
+        }
+        
+        .gradient-text {
+            background: linear-gradient(135deg, #0369a1, #16a085);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .card-hover {
+            transition: all 0.3s ease;
+        }
+        
+        .card-hover:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+        }
+        
+        .ocean-wave {
+            background-image: 
+                linear-gradient(45deg, transparent 30%, rgba(59, 130, 246, 0.1) 30%, rgba(59, 130, 246, 0.1) 70%, transparent 70%),
+                linear-gradient(-45deg, transparent 30%, rgba(34, 197, 94, 0.1) 30%, rgba(34, 197, 94, 0.1) 70%, transparent 70%);
+            background-size: 40px 40px;
+            animation: wave 20s linear infinite;
+        }
+        
+        @keyframes wave {
+            0% { background-position: 0 0, 0 0; }
+            100% { background-position: 40px 40px, -40px -40px; }
+        }
+        
+        @keyframes pulse-slow {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+        
+        .animate-pulse-slow {
+            animation: pulse-slow 3s infinite;
+        }
+        
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-6px); }
+        }
+        
+        .animate-float {
+            animation: float 6s ease-in-out infinite;
+        }
+    </style>
+</head>
+<body class="ocean-wave">
+    <!-- Sidebar -->
+    <div class="fixed left-0 top-0 h-full w-64 sidebar-gradient shadow-2xl z-40">
+        <!-- Logo and Brand -->
+        <div class="p-6 border-b border-slate-700/50">
+            <div class="flex items-center space-x-3">
+                <div class="w-10 h-10 bg-gradient-to-br from-blue-400 to-green-500 rounded-xl flex items-center justify-center shadow-lg animate-float">
+                    <span class="text-white font-bold text-lg">🌱</span>
+                </div>
+                <div>
+                    <h1 class="text-white font-bold text-lg">AlgaeFarm Pro</h1>
+                    <p class="text-slate-400 text-xs">Smart Aquaculture</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- User Profile Section -->
+        <div class="p-6 border-b border-slate-700/50">
+            <div class="flex items-center space-x-3">
+                <div class="relative">
+                    <div class="w-12 h-12 bg-gradient-to-br from-blue-500 to-green-500 rounded-xl flex items-center justify-center">
+                        <span class="text-white font-bold">JD</span>
+                    </div>
+                    <div class="absolute -bottom-1 -right-1 w-4 h-4 bg-green-500 rounded-full border-2 border-slate-800 animate-pulse-slow"></div>
+                </div>
+                <div class="flex-1 min-w-0">
+                    <h3 class="text-white font-medium text-sm truncate">Dr. John Doe</h3>
+                    <p class="text-slate-400 text-xs">Online</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Navigation -->
+        <nav class="p-4 space-y-2 flex-1">
+            <button class="nav-item w-full flex items-center px-4 py-3 text-sm font-medium rounded-xl transition-all duration-200 bg-white/20 text-white shadow-lg">
+                <i data-lucide="home" class="w-5 h-5 mr-3"></i>
+                <span class="flex-1 text-left">Dashboard</span>
+            </button>
+            
+            <button class="nav-item w-full flex items-center px-4 py-3 text-sm font-medium rounded-xl transition-all duration-200 hover:bg-white/10 hover:text-white text-slate-300">
+                <i data-lucide="building-2" class="w-5 h-5 mr-3"></i>
+                <span class="flex-1 text-left">My Farms</span>
+                <span class="ml-auto bg-blue-500 text-white text-xs font-medium px-2 py-1 rounded-full">5</span>
+            </button>
+            
+            <button class="nav-item w-full flex items-center px-4 py-3 text-sm font-medium rounded-xl transition-all duration-200 hover:bg-white/10 hover:text-white text-slate-300">
+                <i data-lucide="bar-chart-3" class="w-5 h-5 mr-3"></i>
+                <span class="flex-1 text-left">Analytics</span>
+            </button>
+            
+            <button class="nav-item w-full flex items-center px-4 py-3 text-sm font-medium rounded-xl transition-all duration-200 hover:bg-white/10 hover:text-white text-slate-300">
+                <i data-lucide="zap" class="w-5 h-5 mr-3"></i>
+                <span class="flex-1 text-left">Actions</span>
+                <span class="ml-auto bg-blue-500 text-white text-xs font-medium px-2 py-1 rounded-full">3</span>
+            </button>
+            
+            <button class="nav-item w-full flex items-center px-4 py-3 text-sm font-medium rounded-xl transition-all duration-200 hover:bg-white/10 hover:text-white text-slate-300">
+                <i data-lucide="clipboard-list" class="w-5 h-5 mr-3"></i>
+                <span class="flex-1 text-left">Reports</span>
+            </button>
+            
+            <button class="nav-item w-full flex items-center px-4 py-3 text-sm font-medium rounded-xl transition-all duration-200 hover:bg-white/10 hover:text-white text-slate-300">
+                <i data-lucide="settings" class="w-5 h-5 mr-3"></i>
+                <span class="flex-1 text-left">Settings</span>
+            </button>
+            
+            <button class="nav-item w-full flex items-center px-4 py-3 text-sm font-medium rounded-xl transition-all duration-200 hover:bg-white/10 hover:text-white text-slate-300">
+                <i data-lucide="user" class="w-5 h-5 mr-3"></i>
+                <span class="flex-1 text-left">Profile</span>
+            </button>
+        </nav>
+
+        <!-- Add New Farm Button -->
+        <div class="p-4 border-t border-slate-700/50">
+            <button class="w-full bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white font-medium py-3 px-4 rounded-xl transition-all duration-300 flex items-center justify-center space-x-2 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5">
+                <i data-lucide="plus" class="w-5 h-5"></i>
+                <span>Add New Farm</span>
+            </button>
+        </div>
+
+        <!-- Footer -->
+        <div class="p-4 border-t border-slate-700/50">
+            <div class="text-center">
+                <p class="text-slate-500 text-xs">Version 1.2.0</p>
+                <p class="text-slate-600 text-xs">© 2025 AlgaeFarm Pro</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="ml-64">
+        <!-- Header -->
+        <header class="glass-effect border-b border-white/20 sticky top-0 z-30">
+            <div class="px-6 py-4">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <h1 class="text-2xl font-bold gradient-text">Dashboard Overview</h1>
+                        <p class="text-slate-600 text-sm mt-1">Welcome back, John</p>
+                    </div>
+
+                    <div class="flex items-center space-x-4">
+                        <!-- Search -->
+                        <div class="relative">
+                            <i data-lucide="search" class="absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400 w-4 h-4"></i>
+                            <input type="text" placeholder="Search farms..." class="pl-10 w-64 px-4 py-3 border border-gray-200 rounded-xl text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all duration-200 glass-effect">
+                        </div>
+
+                        <!-- Notifications -->
+                        <button class="relative p-2 text-slate-600 hover:text-slate-800 transition-colors">
+                            <i data-lucide="bell" class="w-5 h-5"></i>
+                            <span class="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full animate-pulse-slow"></span>
+                        </button>
+
+                        <!-- Settings -->
+                        <button class="p-2 text-slate-600 hover:text-slate-800 transition-colors">
+                            <i data-lucide="settings" class="w-5 h-5"></i>
+                        </button>
+
+                        <!-- User Menu -->
+                        <div class="flex items-center space-x-3 pl-4 border-l border-slate-200">
+                            <div class="text-right">
+                                <p class="text-sm font-medium text-slate-800">Dr. John Doe</p>
+                                <p class="text-xs text-slate-500">john.doe@example.com</p>
+                            </div>
+                            <div class="w-10 h-10 bg-gradient-to-br from-blue-500 to-green-500 rounded-xl flex items-center justify-center shadow-md hover:shadow-lg transition-shadow cursor-pointer">
+                                <span class="text-white font-bold text-sm">JD</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Main Content Area -->
+        <main class="p-6">
+            <!-- System Overview Cards -->
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6 mb-8">
+                <div class="glass-effect rounded-2xl p-6 border border-white/30 shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-sm font-medium text-slate-600">Total Farms</p>
+                            <p class="text-2xl font-bold text-slate-800">5</p>
+                        </div>
+                        <div class="w-12 h-12 bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl flex items-center justify-center">
+                            <i data-lucide="building-2" class="w-6 h-6 text-white"></i>
+                        </div>
+                    </div>
+                    <div class="mt-4 flex items-center text-sm">
+                        <span class="text-green-600 font-medium">↗ 2 new</span>
+                        <span class="text-slate-500 ml-1">this month</span>
+                    </div>
+                </div>
+
+                <div class="glass-effect rounded-2xl p-6 border border-white/30 shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-sm font-medium text-slate-600">Active Alerts</p>
+                            <p class="text-2xl font-bold text-red-600">2</p>
+                        </div>
+                        <div class="w-12 h-12 bg-gradient-to-br from-red-500 to-red-600 rounded-xl flex items-center justify-center">
+                            <i data-lucide="alert-triangle" class="w-6 h-6 text-white"></i>
+                        </div>
+                    </div>
+                    <div class="mt-4 flex items-center text-sm">
+                        <span class="text-red-600 font-medium">Farm B, Farm C</span>
+                    </div>
+                </div>
+
+                <div class="glass-effect rounded-2xl p-6 border border-white/30 shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-sm font-medium text-slate-600">Healthy Farms</p>
+                            <p class="text-2xl font-bold text-green-600">3</p>
+                        </div>
+                        <div class="w-12 h-12 bg-gradient-to-br from-green-500 to-green-600 rounded-xl flex items-center justify-center">
+                            <i data-lucide="check-circle" class="w-6 h-6 text-white"></i>
+                        </div>
+                    </div>
+                    <div class="mt-4 flex items-center text-sm">
+                        <span class="text-green-600 font-medium">60%</span>
+                        <span class="text-slate-500 ml-1">optimal</span>
+                    </div>
+                </div>
+
+                <div class="glass-effect rounded-2xl p-6 border border-white/30 shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-sm font-medium text-slate-600">Avg Temperature</p>
+                            <p class="text-2xl font-bold text-slate-800">18.2°C</p>
+                        </div>
+                        <div class="w-12 h-12 bg-gradient-to-br from-orange-500 to-orange-600 rounded-xl flex items-center justify-center">
+                            <i data-lucide="thermometer" class="w-6 h-6 text-white"></i>
+                        </div>
+                    </div>
+                    <div class="mt-4 flex items-center text-sm">
+                        <span class="text-green-600 font-medium">↗ +1.2°C</span>
+                        <span class="text-slate-500 ml-1">vs last week</span>
+                    </div>
+                </div>
+
+                <div class="glass-effect rounded-2xl p-6 border border-white/30 shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-sm font-medium text-slate-600">Total Area</p>
+                            <p class="text-2xl font-bold text-slate-800">12.5ha</p>
+                        </div>
+                        <div class="w-12 h-12 bg-gradient-to-br from-purple-500 to-purple-600 rounded-xl flex items-center justify-center">
+                            <i data-lucide="map" class="w-6 h-6 text-white"></i>
+                        </div>
+                    </div>
+                    <div class="mt-4 flex items-center text-sm">
+                        <span class="text-blue-600 font-medium">5 locations</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Critical Alerts -->
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+                <div class="glass-effect rounded-2xl p-6 border border-red-200 shadow-lg">
+                    <div class="flex items-center justify-between mb-4">
+                        <h3 class="text-lg font-semibold text-slate-800">🚨 Critical Alerts</h3>
+                        <button class="text-sm text-blue-600 hover:text-blue-800 font-medium">View All →</button>
+                    </div>
+                    <div class="space-y-3">
+                        <div class="bg-gradient-to-r from-red-50 to-orange-50 border border-red-200 rounded-xl p-4">
+                            <div class="flex items-center justify-between">
+                                <div class="flex items-center space-x-3">
+                                    <div class="w-2 h-2 bg-red-500 rounded-full animate-pulse-slow"></div>
+                                    <div>
+                                        <p class="font-medium text-slate-800">Farm B: DO levels below optimal</p>
+                                        <p class="text-sm text-slate-600">Dissolved oxygen: 6.1mg/L (threshold: 7.0mg/L)</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="bg-gradient-to-r from-yellow-50 to-orange-50 border border-yellow-200 rounded-xl p-4">
+                            <div class="flex items-center justify-between">
+                                <div class="flex items-center space-x-3">
+                                    <div class="w-2 h-2 bg-yellow-500 rounded-full animate-pulse-slow"></div>
+                                    <div>
+                                        <p class="font-medium text-slate-800">Farm C: Temperature rising</p>
+                                        <p class="text-sm text-slate-600">Current: 22.1°C (optimal: 15-20°C)</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="glass-effect rounded-2xl p-6 border border-white/30 shadow-lg">
+                    <div class="flex items-center justify-between mb-4">
+                        <h3 class="text-lg font-semibold text-slate-800">🎯 Recent Actions</h3>
+                        <button class="text-sm text-blue-600 hover:text-blue-800 font-medium">Action Center →</button>
+                    </div>
+                    <div class="space-y-3">
+                        <div class="bg-gradient-to-r from-blue-50 to-blue-50 border border-blue-200 rounded-xl p-4">
+                            <div class="flex items-center justify-between">
+                                <div class="flex items-center space-x-3">
+                                    <div class="w-2 h-2 bg-blue-500 rounded-full"></div>
+                                    <div>
+                                        <p class="font-medium text-slate-800">Farm A: Algarestore Adjustment</p>
+                                        <p class="text-sm text-slate-600">Status: Pending (AI Confidence: 94%)</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="bg-gradient-to-r from-green-50 to-green-50 border border-green-200 rounded-xl p-4">
+                            <div class="flex items-center justify-between">
+                                <div class="flex items-center space-x-3">
+                                    <div class="w-2 h-2 bg-green-500 rounded-full"></div>
+                                    <div>
+                                        <p class="font-medium text-slate-800">Farm D: Harvest Completed</p>
+                                        <p class="text-sm text-slate-600">Result: 2.1 tons harvested successfully</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="bg-gradient-to-r from-yellow-50 to-yellow-50 border border-yellow-200 rounded-xl p-4">
+                            <div class="flex items-center justify-between">
+                                <div class="flex items-center space-x-3">
+                                    <div class="w-2 h-2 bg-yellow-500 rounded-full"></div>
+                                    <div>
+                                        <p class="font-medium text-slate-800">Farm B: pH Buffer Addition</p>
+                                        <p class="text-sm text-slate-600">Status: Pending (AI Confidence: 87%)</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Performance Trends -->
+            <div class="glass-effect rounded-2xl p-6 border border-white/30 shadow-lg mb-8">
+                <div class="flex items-center justify-between mb-6">
+                    <h3 class="text-lg font-semibold text-slate-800">📊 Performance Trends (Last 7 Days)</h3>
+                    <div class="flex space-x-2">
+                        <button class="px-3 py-1 text-sm bg-blue-100 text-blue-800 rounded-lg">7D</button>
+                        <button class="px-3 py-1 text-sm text-slate-600 hover:bg-gray-100 rounded-lg">30D</button>
+                        <button class="px-3 py-1 text-sm text-slate-600 hover:bg-gray-100 rounded-lg">90D</button>
+                    </div>
+                </div>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                    <div class="bg-gradient-to-br from-blue-50 to-blue-100 rounded-xl p-4 border border-blue-200">
+                        <div class="flex items-center justify-between mb-2">
+                            <span class="text-sm font-medium text-blue-800">pH Levels</span>
+                            <i data-lucide="trending-up" class="w-4 h-4 text-blue-600"></i>
+                        </div>
+                        <div class="text-2xl font-bold text-blue-900">6.8</div>
+                        <div class="text-xs text-blue-600">Avg across all farms</div>
+                    </div>
+                    
+                    <div class="bg-gradient-to-br from-orange-50 to-orange-100 rounded-xl p-4 border border-orange-200">
+                        <div class="flex items-center justify-between mb-2">
+                            <span class="text-sm font-medium text-orange-800">Temperature</span>
+                            <i data-lucide="thermometer" class="w-4 h-4 text-orange-600"></i>
+                        </div>
+                        <div class="text-2xl font-bold text-orange-900">18.2°C</div>
+                        <div class="text-xs text-orange-600">Within optimal range</div>
+                    </div>
+                    
+                    <div class="bg-gradient-to-br from-green-50 to-green-100 rounded-xl p-4 border border-green-200">
+                        <div class="flex items-center justify-between mb-2">
+                            <span class="text-sm font-medium text-green-800">Dissolved O2</span>
+                            <i data-lucide="droplets" class="w-4 h-4 text-green-600"></i>
+                        </div>
+                        <div class="text-2xl font-bold text-green-900">7.1mg/L</div>
+                        <div class="text-xs text-green-600">Good levels</div>
+                    </div>
+                    
+                    <div class="bg-gradient-to-br from-purple-50 to-purple-100 rounded-xl p-4 border border-purple-200">
+                        <div class="flex items-center justify-between mb-2">
+                            <span class="text-sm font-medium text-purple-800">Salinity</span>
+                            <i data-lucide="waves" class="w-4 h-4 text-purple-600"></i>
+                        </div>
+                        <div class="text-2xl font-bold text-purple-900">2.6‰</div>
+                        <div class="text-xs text-purple-600">Optimal range</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Farm Status Overview -->
+            <div class="glass-effect rounded-2xl p-6 border border-white/30 shadow-lg">
+                <div class="flex items-center justify-between mb-6">
+                    <h3 class="text-lg font-semibold text-slate-800">🏭 Farm Status Overview</h3>
+                    <button class="text-sm text-blue-600 hover:text-blue-800 font-medium">Manage Farms →</button>
+                </div>
+                
+                <div class="overflow-x-auto">
+                    <table class="w-full">
+                        <thead>
+                            <tr class="border-b border-slate-200">
+                                <th class="text-left py-3 px-4 font-medium text-slate-600">Farm</th>
+                                <th class="text-left py-3 px-4 font-medium text-slate-600">Location</th>
+                                <th class="text-left py-3 px-4 font-medium text-slate-600">Status</th>
+                                <th class="text-left py-3 px-4 font-medium text-slate-600">Last Update</th>
+                                <th class="text-left py-3 px-4 font-medium text-slate-600">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr class="border-b border-slate-100 hover:bg-slate-50/50 transition-colors">
+                                <td class="py-4 px-4">
+                                    <div class="flex items-center space-x-3">
+                                        <div class="w-8 h-8 bg-gradient-to-br from-blue-500 to-green-500 rounded-lg flex items-center justify-center">
+                                            <span class="text-white text-xs font-bold">A</span>
+                                        </div>
+                                        <span class="font-medium text-slate-800">Atlantic Farm Alpha</span>
+                                    </div>
+                                </td>
+                                <td class="py-4 px-4 text-slate-600">Atlantic Ocean</td>
+                                <td class="py-4 px-4">
+                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                                        ✅ Healthy
+                                    </span>
+                                </td>
+                                <td class="py-4 px-4 text-slate-600">2m ago</td>
+                                <td class="py-4 px-4">
+                                    <button class="text-blue-600 hover:text-blue-800 font-medium text-sm">View Details</button>
+                                </td>
+                            </tr>
+                            
+                            <tr class="border-b border-slate-100 hover:bg-slate-50/50 transition-colors">
+                                <td class="py-4 px-4">
+                                    <div class="flex items-center space-x-3">
+                                        <div class="w-8 h-8 bg-gradient-to-br from-yellow-500 to-orange-500 rounded-lg flex items-center justify-center">
+                                            <span class="text-white text-xs font-bold">B</span>
+                                        </div>
+                                        <span class="font-medium text-slate-800">Pacific Farm Beta</span>
+                                    </div>
+                                </td>
+                                <td class="py-4 px-4 text-slate-600">Pacific Ocean</td>
+                                <td class="py-4 px-4">
+                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
+                                        ⚠️ Alert
+                                    </span>
+                                </td>
+                                <td class="py-4 px-4 text-slate-600">5m ago</td>
+                                <td class="py-4 px-4">
+                                    <button class="text-blue-600 hover:text-blue-800 font-medium text-sm">View Details</button>
+                                </td>
+                            </tr>
+                            
+                            <tr class="border-b border-slate-100 hover:bg-slate-50/50 transition-colors">
+                                <td class="py-4 px-4">
+                                    <div class="flex items-center space-x-3">
+                                        <div class="w-8 h-8 bg-gradient-to-br from-red-500 to-pink-500 rounded-lg flex items-center justify-center">
+                                            <span class="text-white text-xs font-bold">C</span>
+                                        </div>
+                                        <span class="font-medium text-slate-800">Arctic Research Farm</span>
+                                    </div>
+                                </td>
+                                <td class="py-4 px-4 text-slate-600">Arctic Ocean</td>
+                                <td class="py-4 px-4">
+                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
+                                        🔴 Critical
+                                    </span>
+                                </td>
+                                <td class="py-4 px-4 text-slate-600">1h ago</td>
+                                <td class="py-4 px-4">
+                                    <button class="text-blue-600 hover:text-blue-800 font-medium text-sm">View Details</button>
+                                </td>
+                            </tr>
+                            
+                            <tr class="border-b border-slate-100 hover:bg-slate-50/50 transition-colors">
+                                <td class="py-4 px-4">
+                                    <div class="flex items-center space-x-3">
+                                        <div class="w-8 h-8 bg-gradient-to-br from-green-500 to-emerald-500 rounded-lg flex items-center justify-center">
+                                            <span class="text-white text-xs font-bold">D</span>
+                                        </div>
+                                        <span class="font-medium text-slate-800">Indian Ocean Delta</span>
+                                    </div>
+                                </td>
+                                <td class="py-4 px-4 text-slate-600">Indian Ocean</td>
+                                <td class="py-4 px-4">
+                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                                        ✅ Healthy
+                                    </span>
+                                </td>
+                                <td class="py-4 px-4 text-slate-600">10m ago</td>
+                                <td class="py-4 px-4">
+                                    <button class="text-blue-600 hover:text-blue-800 font-medium text-sm">View Details</button>
+                                </td>
+                            </tr>
+                            
+                            <tr class="hover:bg-slate-50/50 transition-colors">
+                                <td class="py-4 px-4">
+                                    <div class="flex items-center space-x-3">
+                                        <div class="w-8 h-8 bg-gradient-to-br from-purple-500 to-indigo-500 rounded-lg flex items-center justify-center">
+                                            <span class="text-white text-xs font-bold">E</span>
+                                        </div>
+                                        <span class="font-medium text-slate-800">Mediterranean Research Station</span>
+                                    </div>
+                                </td>
+                                <td class="py-4 px-4 text-slate-600">Mediterranean Sea</td>
+                                <td class="py-4 px-4">
+                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                                        ✅ Healthy
+                                    </span>
+                                </td>
+                                <td class="py-4 px-4 text-slate-600">15m ago</td>
+                                <td class="py-4 px-4">
+                                    <button class="text-blue-600 hover:text-blue-800 font-medium text-sm">View Details</button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        // Initialize Lucide icons
+        lucide.createIcons();
+        
+        // Add some interactive effects
+        document.addEventListener('DOMContentLoaded', function() {
+            // Animate cards on scroll
+            const cards = document.querySelectorAll('.card-hover');
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.style.animation = 'fadeInUp 0.6s ease-out';
+                    }
+                });
+            });
+            
+            cards.forEach(card => observer.observe(card));
+        });
+    </script>
+</body>
+</html>
