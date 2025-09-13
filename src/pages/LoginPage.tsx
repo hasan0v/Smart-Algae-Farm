@@ -16,7 +16,7 @@ export const LoginPage = ({ onLogin }: LoginPageProps) => {
           <div className="w-14 h-14 sm:w-16 sm:h-16 bg-gradient-to-br from-ocean-400 to-algae-500 rounded-2xl flex items-center justify-center shadow-lg mx-auto mb-4">
             <span className="text-white font-bold text-xl sm:text-2xl">🌱</span>
           </div>
-          <h1 className="text-xl sm:text-2xl font-bold gradient-text mb-2">AlgaeFarm Pro'ya Hoş Geldiniz</h1>
+          <h1 className="text-xl sm:text-2xl font-bold gradient-text mb-2">Smart Macroalgae Farm'ya Hoş Geldiniz</h1>
           <p className="text-slate-600 text-sm sm:text-base">Akıllı Su Ürünleri Yönetim Sistemi</p>
         </div>
 

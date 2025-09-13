@@ -78,7 +78,7 @@ export const Sidebar = ({ activeTab, onTabChange, userName, userAvatar, isOpen, 
               <span className="text-white font-bold text-lg">🌱</span>
             </div>
             <div>
-              <h1 className="text-white font-bold text-lg">AlgaeFarm Pro</h1>
+              <h1 className="text-white font-bold text-lg">Smart Macroalgae</h1>
               <p className="text-slate-400 text-xs">Akıllı Su Ürünleri</p>
             </div>
           </div>
@@ -170,7 +170,7 @@ export const Sidebar = ({ activeTab, onTabChange, userName, userAvatar, isOpen, 
           className="text-center"
         >
           <p className="text-slate-500 text-xs">Sürüm 1.2.0</p>
-          <p className="text-slate-600 text-xs">© 2025 AlgaeFarm Pro</p>
+          <p className="text-slate-600 text-xs">© 2025 Smart Macroalgae Farm</p>
         </motion.div>
       </div>
     </motion.div>

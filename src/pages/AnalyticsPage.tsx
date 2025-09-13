@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { 
   ChartBarIcon,
   ArrowTrendingUpIcon,
@@ -7,11 +7,44 @@ import {
   CalendarIcon,
   FunnelIcon
 } from '@heroicons/react/24/outline';
-import { mockFarms } from '../data/mockData';
+import { 
+  generateAnalyticsTrends, 
+  generateAnalyticsKPIs, 
+  generateFarmPerformanceData,
+  generatePredictionData,
+  generateSimpleTrendData 
+} from '../data/mockData';
 
 export const AnalyticsPage = () => {
   const [timeRange, setTimeRange] = useState('7g');
   const [selectedMetric, setSelectedMetric] = useState('sicaklik');
+  const [kpiData, setKpiData] = useState<any>(null);
+  const [farmPerformance, setFarmPerformance] = useState<any[]>([]);
+  const [predictions, setPredictions] = useState<any[]>([]);
+  const [chartData, setChartData] = useState<any[]>([]);
+
+  useEffect(() => {
+    // Load analytics data
+    setKpiData(generateAnalyticsKPIs());
+    setFarmPerformance(generateFarmPerformanceData());
+    setPredictions(generatePredictionData());
+  }, []);
+
+  useEffect(() => {
+    // Update chart data when metric or time range changes - Use hardcoded data for now
+    const hardcodedData = [
+      { time: 'Paz', value: 22.5, status: 'normal' },
+      { time: 'Pzt', value: 24.2, status: 'normal' },
+      { time: 'Sal', value: 21.8, status: 'normal' },
+      { time: 'Çar', value: 23.1, status: 'normal' },
+      { time: 'Per', value: 25.4, status: 'normal' },
+      { time: 'Cum', value: 23.9, status: 'normal' },
+      { time: 'Cmt', value: 22.7, status: 'normal' }
+    ];
+    
+    console.log('Setting hardcoded chart data:', hardcodedData);
+    setChartData(hardcodedData);
+  }, [selectedMetric, timeRange]);
 
   const metrics = [
     { id: 'sicaklik', name: 'Sıcaklık', unit: '°C', color: 'orange' },
@@ -27,27 +60,6 @@ export const AnalyticsPage = () => {
     { id: '30g', name: '30 Gün' },
     { id: '90g', name: '90 Gün' }
   ];
-
-  // Generate mock data for charts
-  const generateChartData = (metric: string, range: string) => {
-    const points = range === '24s' ? 24 : range === '7g' ? 7 : range === '30g' ? 30 : 90;
-    return Array.from({length: points}, (_, i) => {
-      let baseValue = 20;
-      if (metric === 'sicaklik') baseValue = mockFarms[0].sensors.temperature.value;
-      else if (metric === 'ph') baseValue = mockFarms[0].sensors.ph.value;
-      else if (metric === 'cozunmusOksijen') baseValue = mockFarms[0].sensors.dissolvedOxygen.value;
-      else if (metric === 'tuzluluk') baseValue = mockFarms[0].sensors.salinity.value;
-      else if (metric === 'buyume') baseValue = mockFarms[0].sensors.growth.value;
-      
-      return {
-        time: i,
-        value: baseValue + (Math.random() - 0.5) * 5,
-        farm: mockFarms[i % mockFarms.length].name
-      };
-    });
-  };
-
-  const chartData = generateChartData(selectedMetric, timeRange);
 
   return (
     <motion.div
@@ -90,10 +102,14 @@ export const AnalyticsPage = () => {
             <div className="w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-br from-green-500 to-green-600 rounded-xl flex items-center justify-center">
               <ArrowTrendingUpIcon className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
             </div>
-            <span className="text-green-600 text-xs sm:text-sm font-medium">+%15.2</span>
+            <span className={`text-xs sm:text-sm font-medium ${
+              kpiData?.generalGrowth.trend === 'up' ? 'text-green-600' : 'text-red-600'
+            }`}>
+              {kpiData?.generalGrowth.trend === 'up' ? '+' : '-'}%{kpiData?.generalGrowth.change || 15.2}
+            </span>
           </div>
           <h3 className="text-xs sm:text-sm font-medium text-slate-600">Genel Büyüme</h3>
-          <p className="text-xl sm:text-2xl font-bold text-slate-800">%12.8</p>
+          <p className="text-xl sm:text-2xl font-bold text-slate-800">%{kpiData?.generalGrowth.current || 12.8}</p>
           <p className="text-xs text-slate-500 mt-1">önceki döneme göre</p>
         </motion.div>
 
@@ -101,16 +117,18 @@ export const AnalyticsPage = () => {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.2 }}
-          className="glass-effect rounded-2xl p-6 border border-white/30 shadow-lg"
+          className="glass-effect rounded-2xl p-4 sm:p-6 border border-white/30 shadow-lg"
         >
-          <div className="flex items-center justify-between mb-4">
-            <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl flex items-center justify-center">
-              <span className="text-white text-xl">💧</span>
+          <div className="flex items-center justify-between mb-3 sm:mb-4">
+            <div className="w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl flex items-center justify-center">
+              <span className="text-white text-lg sm:text-xl">💧</span>
             </div>
-            <span className="text-blue-600 text-sm font-medium">Optimal</span>
+            <span className="text-blue-600 text-xs sm:text-sm font-medium">
+              {kpiData?.waterQuality.status || 'Optimal'}
+            </span>
           </div>
-          <h3 className="text-sm font-medium text-slate-600">Su Kalitesi</h3>
-          <p className="text-2xl font-bold text-slate-800">%94.2</p>
+          <h3 className="text-xs sm:text-sm font-medium text-slate-600">Su Kalitesi</h3>
+          <p className="text-xl sm:text-2xl font-bold text-slate-800">%{kpiData?.waterQuality.current || 94.2}</p>
           <p className="text-xs text-slate-500 mt-1">Kalite indeksi</p>
         </motion.div>
 
@@ -118,16 +136,20 @@ export const AnalyticsPage = () => {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.3 }}
-          className="glass-effect rounded-2xl p-6 border border-white/30 shadow-lg"
+          className="glass-effect rounded-2xl p-4 sm:p-6 border border-white/30 shadow-lg"
         >
-          <div className="flex items-center justify-between mb-4">
-            <div className="w-12 h-12 bg-gradient-to-br from-orange-500 to-orange-600 rounded-xl flex items-center justify-center">
-              <span className="text-white text-xl">⚡</span>
+          <div className="flex items-center justify-between mb-3 sm:mb-4">
+            <div className="w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-br from-orange-500 to-orange-600 rounded-xl flex items-center justify-center">
+              <span className="text-white text-lg sm:text-xl">⚡</span>
             </div>
-            <span className="text-orange-600 text-sm font-medium">-%5.3</span>
+            <span className={`text-xs sm:text-sm font-medium ${
+              kpiData?.energyUsage.trend === 'down' ? 'text-green-600' : 'text-red-600'
+            }`}>
+              {kpiData?.energyUsage.trend === 'down' ? '-' : '+'}%{Math.abs(kpiData?.energyUsage.change || 5.3)}
+            </span>
           </div>
-          <h3 className="text-sm font-medium text-slate-600">Enerji Kullanımı</h3>
-          <p className="text-2xl font-bold text-slate-800">1,247 kWh</p>
+          <h3 className="text-xs sm:text-sm font-medium text-slate-600">Enerji Kullanımı</h3>
+          <p className="text-xl sm:text-2xl font-bold text-slate-800">{kpiData?.energyUsage.current?.toLocaleString() || '1,247'} kWh</p>
           <p className="text-xs text-slate-500 mt-1">Bu ay</p>
         </motion.div>
 
@@ -135,16 +157,20 @@ export const AnalyticsPage = () => {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.4 }}
-          className="glass-effect rounded-2xl p-6 border border-white/30 shadow-lg"
+          className="glass-effect rounded-2xl p-4 sm:p-6 border border-white/30 shadow-lg"
         >
-          <div className="flex items-center justify-between mb-4">
-            <div className="w-12 h-12 bg-gradient-to-br from-purple-500 to-purple-600 rounded-xl flex items-center justify-center">
-              <span className="text-white text-xl">📈</span>
+          <div className="flex items-center justify-between mb-3 sm:mb-4">
+            <div className="w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-br from-purple-500 to-purple-600 rounded-xl flex items-center justify-center">
+              <span className="text-white text-lg sm:text-xl">📈</span>
             </div>
-            <span className="text-purple-600 text-sm font-medium">+%8.7</span>
+            <span className={`text-xs sm:text-sm font-medium ${
+              kpiData?.revenue.trend === 'up' ? 'text-green-600' : 'text-red-600'
+            }`}>
+              {kpiData?.revenue.trend === 'up' ? '+' : '-'}%{kpiData?.revenue.change || 8.7}
+            </span>
           </div>
-          <h3 className="text-sm font-medium text-slate-600">Gelir</h3>
-          <p className="text-2xl font-bold text-slate-800">₺184,350</p>
+          <h3 className="text-xs sm:text-sm font-medium text-slate-600">Gelir</h3>
+          <p className="text-xl sm:text-2xl font-bold text-slate-800">₺{kpiData?.revenue.current?.toLocaleString() || '184,350'}</p>
           <p className="text-xs text-slate-500 mt-1">Bu ay</p>
         </motion.div>
       </div>
@@ -189,31 +215,46 @@ export const AnalyticsPage = () => {
           </div>
           
           <div className="flex items-end justify-between h-48 space-x-1">
-            {chartData.map((point, index) => {
-              const height = Math.max(10, (point.value / 30) * 100);
+            {chartData && chartData.length > 0 ? chartData.map((point, index) => {
+              const maxValue = Math.max(...chartData.map(p => p.value));
+              const minValue = Math.min(...chartData.map(p => p.value));
+              const range = maxValue - minValue || 1; // Prevent division by zero
+              const normalizedValue = ((point.value - minValue) / range);
+              const height = Math.max(20, normalizedValue * 70 + 20); // Ensure minimum height
+              
               return (
                 <div key={index} className="flex-1 flex flex-col items-center">
                   <div 
-                    className={`w-full rounded-t-lg transition-all duration-500 cursor-pointer hover:opacity-75 ${
+                    className={`w-full rounded-t-lg transition-all duration-500 cursor-pointer hover:opacity-75 relative group ${
                       selectedMetric === 'sicaklik' ? 'bg-gradient-to-t from-orange-500 to-orange-300' :
                       selectedMetric === 'ph' ? 'bg-gradient-to-t from-blue-500 to-blue-300' :
                       selectedMetric === 'cozunmusOksijen' ? 'bg-gradient-to-t from-green-500 to-green-300' :
                       selectedMetric === 'tuzluluk' ? 'bg-gradient-to-t from-purple-500 to-purple-300' :
                       'bg-gradient-to-t from-emerald-500 to-emerald-300'
                     }`}
-                    style={{height: `${height}%`}}
-                    title={`${point.value.toFixed(1)}${metrics.find(m => m.id === selectedMetric)?.unit}`}
-                  ></div>
-                  {index % Math.ceil(chartData.length / 8) === 0 && (
-                    <span className="text-xs text-slate-500 mt-2">
-                      {timeRange === '24s' ? `${index}:00` : 
-                       timeRange === '7g' ? ['P', 'P', 'S', 'Ç', 'P', 'C', 'C'][index] :
-                       index % 5 === 0 ? `Gün ${index + 1}` : ''}
-                    </span>
-                  )}
+                    style={{height: `${height}%`, minHeight: '20px'}}
+                  >
+                    {/* Tooltip */}
+                    <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-2 py-1 bg-gray-800 text-white text-xs rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap z-10">
+                      {point.value.toFixed(1)}{metrics.find(m => m.id === selectedMetric)?.unit}
+                      <div className="text-xs text-gray-300">{point.time}</div>
+                    </div>
+                  </div>
+                  <span className="text-xs text-slate-500 mt-2">
+                    {point.time}
+                  </span>
                 </div>
               );
-            })}
+            }) : (
+              // Fallback when no data
+              <div className="flex-1 flex items-center justify-center h-48">
+                <div className="text-slate-500 text-center">
+                  <div className="text-4xl mb-2">📊</div>
+                  <p>Veri bulunamadı</p>
+                  <p className="text-xs mt-1">ChartData length: {chartData?.length || 0}</p>
+                </div>
+              </div>
+            )}
           </div>
         </div>
       </motion.div>
@@ -228,62 +269,89 @@ export const AnalyticsPage = () => {
         <div className="glass-effect rounded-2xl p-6 border border-white/30 shadow-lg">
           <h3 className="text-lg font-semibold text-slate-800 mb-4">Çiftlik Performans Karşılaştırması</h3>
           <div className="space-y-4">
-            {mockFarms.slice(0, 4).map((farm, index) => {
-              const performance = 85 + Math.random() * 15;
-              return (
-                <div key={farm.id} className="flex items-center justify-between">
-                  <div className="flex items-center space-x-3">
-                    <div className={`w-8 h-8 bg-gradient-to-br ${
-                      index % 4 === 0 ? 'from-blue-500 to-green-500' :
-                      index % 4 === 1 ? 'from-yellow-500 to-orange-500' :
-                      index % 4 === 2 ? 'from-red-500 to-pink-500' :
-                      'from-purple-500 to-indigo-500'
-                    } rounded-lg flex items-center justify-center`}>
-                      <span className="text-white text-xs font-bold">{farm.name.charAt(0)}</span>
-                    </div>
-                    <span className="font-medium text-slate-800">{farm.name}</span>
+            {farmPerformance.slice(0, 4).map((farm, index) => (
+              <div key={farm.farmId} className="flex items-center justify-between">
+                <div className="flex items-center space-x-3">
+                  <div className={`w-8 h-8 bg-gradient-to-br ${
+                    index % 4 === 0 ? 'from-blue-500 to-green-500' :
+                    index % 4 === 1 ? 'from-yellow-500 to-orange-500' :
+                    index % 4 === 2 ? 'from-red-500 to-pink-500' :
+                    'from-purple-500 to-indigo-500'
+                  } rounded-lg flex items-center justify-center`}>
+                    <span className="text-white text-xs font-bold">{farm.farmName?.charAt(0) || 'F'}</span>
                   </div>
-                  <div className="flex items-center space-x-3">
-                    <div className="w-32 bg-slate-200 rounded-full h-2">
-                      <div 
-                        className="bg-gradient-to-r from-green-400 to-green-600 h-2 rounded-full transition-all duration-500"
-                        style={{width: `${performance}%`}}
-                      ></div>
-                    </div>
-                    <span className="text-sm font-medium text-slate-800 w-12">%{performance.toFixed(0)}</span>
+                  <div className="flex flex-col">
+                    <span className="font-medium text-slate-800">{farm.farmName}</span>
+                    <span className="text-xs text-slate-500">Büyüme: %{farm.growthRate}</span>
                   </div>
                 </div>
-              );
-            })}
+                <div className="flex items-center space-x-3">
+                  <div className="w-32 bg-slate-200 rounded-full h-2">
+                    <div 
+                      className={`h-2 rounded-full transition-all duration-500 ${
+                        farm.performance >= 85 ? 'bg-gradient-to-r from-green-400 to-green-600' :
+                        farm.performance >= 70 ? 'bg-gradient-to-r from-yellow-400 to-yellow-600' :
+                        'bg-gradient-to-r from-red-400 to-red-600'
+                      }`}
+                      style={{width: `${Math.min(100, farm.performance)}%`}}
+                    ></div>
+                  </div>
+                  <span className="text-sm font-medium text-slate-800 w-12">%{farm.performance}</span>
+                  <span className={`text-xs ${
+                    farm.trend === 'up' ? 'text-green-600' : 'text-red-600'
+                  }`}>
+                    {farm.trend === 'up' ? '↗' : '↘'} {farm.change}%
+                  </span>
+                </div>
+              </div>
+            ))}
           </div>
         </div>
 
         <div className="glass-effect rounded-2xl p-6 border border-white/30 shadow-lg">
           <h3 className="text-lg font-semibold text-slate-800 mb-4">Tahmine Dayalı Analiz</h3>
           <div className="space-y-4">
-            <div className="bg-blue-50 rounded-xl p-4 border border-blue-200">
-              <div className="flex items-center space-x-2 mb-2">
-                <span className="text-blue-600 text-xl">🔮</span>
-                <h4 className="font-medium text-blue-800">Büyüme Tahmini</h4>
+            {predictions.slice(0, 3).map((prediction, index) => (
+              <div key={prediction.type} className={`rounded-xl p-4 border ${
+                prediction.impact === 'positive' ? 'bg-green-50 border-green-200' :
+                prediction.impact === 'warning' ? 'bg-yellow-50 border-yellow-200' :
+                'bg-blue-50 border-blue-200'
+              }`}>
+                <div className="flex items-center space-x-2 mb-2">
+                  <span className={`text-xl ${
+                    prediction.impact === 'positive' ? 'text-green-600' :
+                    prediction.impact === 'warning' ? 'text-yellow-600' :
+                    'text-blue-600'
+                  }`}>
+                    {prediction.icon}
+                  </span>
+                  <h4 className={`font-medium ${
+                    prediction.impact === 'positive' ? 'text-green-800' :
+                    prediction.impact === 'warning' ? 'text-yellow-800' :
+                    'text-blue-800'
+                  }`}>
+                    {prediction.title}
+                  </h4>
+                  <span className={`text-xs px-2 py-1 rounded-full ${
+                    prediction.impact === 'positive' ? 'bg-green-100 text-green-700' :
+                    prediction.impact === 'warning' ? 'bg-yellow-100 text-yellow-700' :
+                    'bg-blue-100 text-blue-700'
+                  }`}>
+                    %{prediction.confidence} güven
+                  </span>
+                </div>
+                <p className={`text-sm ${
+                  prediction.impact === 'positive' ? 'text-green-700' :
+                  prediction.impact === 'warning' ? 'text-yellow-700' :
+                  'text-blue-700'
+                }`}>
+                  {prediction.description}
+                </p>
+                <div className="flex justify-between items-center mt-2">
+                  <span className="text-xs text-slate-500">Zaman aralığı: {prediction.timeframe}</span>
+                </div>
               </div>
-              <p className="text-sm text-blue-700">Mevcut trendlere dayalı olarak önümüzdeki 30 günde %18 büyüme artışı bekleniyor.</p>
-            </div>
-            
-            <div className="bg-green-50 rounded-xl p-4 border border-green-200">
-              <div className="flex items-center space-x-2 mb-2">
-                <span className="text-green-600 text-xl">🌱</span>
-                <h4 className="font-medium text-green-800">Hasat Tahmini</h4>
-              </div>
-              <p className="text-sm text-green-700">Gelecek hafta optimal hasat penceresi öngörülüyor. Tahmini verim: 2.3 ton.</p>
-            </div>
-            
-            <div className="bg-yellow-50 rounded-xl p-4 border border-yellow-200">
-              <div className="flex items-center space-x-2 mb-2">
-                <span className="text-yellow-600 text-xl">⚠️</span>
-                <h4 className="font-medium text-yellow-800">Hava Durumu Uyarısı</h4>
-              </div>
-              <p className="text-sm text-yellow-700">Fırtına sistemi yaklaşıyor. Çiftlik C için koruyucu önlemler düşünün.</p>
-            </div>
+            ))}
           </div>
         </div>
       </motion.div>

@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { 
   ArrowLeftIcon,
   MapPinIcon,
@@ -10,7 +10,7 @@ import {
   PlayIcon,
   PauseIcon
 } from '@heroicons/react/24/outline';
-import { Farm } from '../data/mockData';
+import { Farm, generateSimpleTrendData } from '../data/mockData';
 
 interface FarmDetailsPageProps {
   farm: Farm;
@@ -19,6 +19,25 @@ interface FarmDetailsPageProps {
 
 export const FarmDetailsPage = ({ farm, onBack }: FarmDetailsPageProps) => {
   const [activeTab, setActiveTab] = useState('genel-bakis');
+  const [performanceData, setPerformanceData] = useState<any[]>([]);
+  const [keyMetrics, setKeyMetrics] = useState<any>(null);
+
+  useEffect(() => {
+    // Generate performance data for the 7-day trend
+    const trendData = generateSimpleTrendData('buyume', '7g');
+    setPerformanceData(trendData);
+
+    // Generate key metrics based on farm status and sensor data
+    const metrics = {
+      averageGrowth: farm.sensors.growth.value,
+      efficiency: farm.status === 'healthy' ? 94.2 : farm.status === 'warning' ? 78.5 : 62.3,
+      healthIndex: farm.status === 'healthy' ? 8.7 : farm.status === 'warning' ? 6.8 : 4.2,
+      estimatedHarvest: farm.area * (farm.sensors.growth.value / 2.1) * 1.8, // Base calculation
+      waterQuality: (farm.sensors.ph.value + farm.sensors.dissolvedOxygen.value + farm.sensors.salinity.value) / 3 * 10,
+      energyEfficiency: 85 + Math.random() * 10
+    };
+    setKeyMetrics(metrics);
+  }, [farm]);
   const [isMonitoring, setIsMonitoring] = useState(true);
 
   const tabs = [
@@ -299,8 +318,20 @@ export const FarmDetailsPage = ({ farm, onBack }: FarmDetailsPageProps) => {
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                 {farm.images.map((image) => (
                   <div key={image.id} className="bg-slate-50 rounded-xl p-4 border border-slate-200">
-                    <div className="aspect-video bg-gradient-to-br from-blue-100 to-green-100 rounded-lg mb-3 flex items-center justify-center">
-                      <CameraIcon className="w-8 h-8 text-slate-400" />
+                    <div className="bg-gradient-to-br from-blue-100 to-green-100 rounded-lg mb-3 overflow-hidden">
+                      <img 
+                        src={image.url} 
+                        alt={image.description}
+                        className="w-full h-full object-cover rounded-lg"
+                        onError={(e) => {
+                          e.currentTarget.style.display = 'none';
+                          const fallback = e.currentTarget.nextElementSibling as HTMLElement;
+                          if (fallback) fallback.style.display = 'flex';
+                        }}
+                      />
+                      <div className="w-full h-full bg-gradient-to-br from-blue-100 to-green-100 rounded-lg flex items-center justify-center" style={{display: 'none'}}>
+                        <CameraIcon className="w-8 h-8 text-slate-400" />
+                      </div>
                     </div>
                     <p className="font-medium text-slate-800 mb-1">{image.description}</p>
                     <p className="text-sm text-slate-500">{new Date(image.timestamp).toLocaleString('tr-TR')}</p>
@@ -355,16 +386,31 @@ export const FarmDetailsPage = ({ farm, onBack }: FarmDetailsPageProps) => {
                 <div className="bg-slate-50 rounded-xl p-4 border border-slate-200">
                   <h4 className="font-medium text-slate-800 mb-3">7 Günlük Trend</h4>
                   <div className="flex items-end justify-between h-32 space-x-2">
-                    {Array.from({length: 7}, (_, i) => {
-                      const height = Math.random() * 80 + 20;
+                    {performanceData.map((point, i) => {
+                      const maxValue = Math.max(...performanceData.map(p => p.value));
+                      const minValue = Math.min(...performanceData.map(p => p.value));
+                      const range = maxValue - minValue;
+                      const normalizedValue = range > 0 ? ((point.value - minValue) / range) : 0.5;
+                      const height = Math.max(20, normalizedValue * 80 + 15);
+                      
                       return (
-                        <div key={i} className="flex-1 flex flex-col items-center">
+                        <div key={i} className="flex-1 flex flex-col items-center group relative">
                           <div 
-                            className="w-full bg-gradient-to-t from-blue-500 to-blue-300 rounded-t-lg"
+                            className={`w-full rounded-t-lg transition-all duration-500 cursor-pointer hover:opacity-75 ${
+                              farm.status === 'healthy' ? 'bg-gradient-to-t from-green-500 to-green-300' :
+                              farm.status === 'warning' ? 'bg-gradient-to-t from-yellow-500 to-yellow-300' :
+                              'bg-gradient-to-t from-red-500 to-red-300'
+                            }`}
                             style={{height: `${height}%`}}
-                          ></div>
+                          >
+                            {/* Tooltip */}
+                            <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-2 py-1 bg-gray-800 text-white text-xs rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap z-10">
+                              {point.value.toFixed(1)}% büyüme
+                              <div className="text-xs text-gray-300">{point.time}</div>
+                            </div>
+                          </div>
                           <span className="text-xs text-slate-500 mt-2">
-                            {['P', 'P', 'S', 'Ç', 'P', 'C', 'C'][i]}
+                            {point.time}
                           </span>
                         </div>
                       );
@@ -376,19 +422,51 @@ export const FarmDetailsPage = ({ farm, onBack }: FarmDetailsPageProps) => {
                   <div className="space-y-3">
                     <div className="flex justify-between">
                       <span className="text-slate-600">Ort. Büyüme Oranı</span>
-                      <span className="font-bold text-green-600">+%12.5</span>
+                      <span className={`font-bold ${
+                        keyMetrics?.averageGrowth > 2 ? 'text-green-600' : 
+                        keyMetrics?.averageGrowth > 1 ? 'text-yellow-600' : 'text-red-600'
+                      }`}>
+                        {keyMetrics?.averageGrowth > 0 ? '+' : ''}{keyMetrics?.averageGrowth?.toFixed(1)}%
+                      </span>
                     </div>
                     <div className="flex justify-between">
                       <span className="text-slate-600">Verimlilik Skoru</span>
-                      <span className="font-bold text-blue-600">%94.2</span>
+                      <span className={`font-bold ${
+                        keyMetrics?.efficiency > 85 ? 'text-green-600' : 
+                        keyMetrics?.efficiency > 70 ? 'text-yellow-600' : 'text-red-600'
+                      }`}>
+                        {keyMetrics?.efficiency?.toFixed(1)}%
+                      </span>
                     </div>
                     <div className="flex justify-between">
                       <span className="text-slate-600">Sağlık İndeksi</span>
-                      <span className="font-bold text-purple-600">8.7/10</span>
+                      <span className={`font-bold ${
+                        keyMetrics?.healthIndex > 7 ? 'text-green-600' : 
+                        keyMetrics?.healthIndex > 5 ? 'text-yellow-600' : 'text-red-600'
+                      }`}>
+                        {keyMetrics?.healthIndex?.toFixed(1)}/10
+                      </span>
                     </div>
                     <div className="flex justify-between">
                       <span className="text-slate-600">Tahmin Edilen Hasat</span>
-                      <span className="font-bold text-orange-600">2.3 ton</span>
+                      <span className="font-bold text-blue-600">
+                        {keyMetrics?.estimatedHarvest?.toFixed(1)} ton
+                      </span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-slate-600">Su Kalitesi</span>
+                      <span className={`font-bold ${
+                        keyMetrics?.waterQuality > 80 ? 'text-green-600' : 
+                        keyMetrics?.waterQuality > 60 ? 'text-yellow-600' : 'text-red-600'
+                      }`}>
+                        {keyMetrics?.waterQuality?.toFixed(1)}%
+                      </span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-slate-600">Enerji Verimliliği</span>
+                      <span className="font-bold text-purple-600">
+                        {keyMetrics?.energyEfficiency?.toFixed(1)}%
+                      </span>
                     </div>
                   </div>
                 </div>
